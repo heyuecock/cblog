@@ -610,24 +610,32 @@ async function handle_admin(request){
       paths = url.pathname.trim("/").split("/"),
       html, json, file;
   
-  // CSRF保护
-  let csrfToken;
-  if (request.method === 'GET') {
-    csrfToken = btoa(crypto.getRandomValues(new Uint8Array(16)));
-  } else {
+  // --- CSRF 保护 ---
+  const cookies = request.headers.get('Cookie') || '';
+  let csrfCookie = '';
+  cookies.split(';').forEach(cookie => {
+    const [name, value] = cookie.trim().split('=');
+    if (name === 'csrf-token') {
+      csrfCookie = value;
+    }
+  });
+
+  if (request.method !== 'GET') {
     // 对所有写操作（非GET请求）进行CSRF令牌验证
     const csrfHeader = request.headers.get('x-csrf-token');
-    const cookies = request.headers.get('Cookie') || '';
-    let csrfCookie = '';
-    cookies.split(';').forEach(cookie => {
-      const [name, value] = cookie.trim().split('=');
-      if (name === 'csrf-token') {
-        csrfCookie = value;
-      }
-    });
-
     if (!csrfHeader || !csrfCookie || csrfHeader !== csrfCookie) {
+      console.error(`CSRF Token Mismatch. Header: ${csrfHeader}, Cookie: ${csrfCookie}`);
       return new Response('CSRF token mismatch', { status: 403 });
+    }
+  }
+
+  // 为GET请求准备CSRF令牌
+  let csrfToken = csrfCookie;
+  let newCookieNeeded = false;
+  if (request.method === 'GET') {
+    if (!csrfToken) {
+      csrfToken = btoa(crypto.getRandomValues(new Uint8Array(16)));
+      newCookieNeeded = true;
     }
   }
 
@@ -1368,7 +1376,7 @@ async function handle_admin(request){
   }
   if(html){
     // 将CSRF令牌注入到HTML中
-    if (csrfToken) {
+    if (request.method === 'GET' && csrfToken) {
       const csrfMetaTag = `<meta name="csrf-token" content="${csrfToken}">`;
       html = html.replace('</head>', `${csrfMetaTag}</head>`);
     }
@@ -1380,8 +1388,8 @@ async function handle_admin(request){
       status:200
     });
 
-    // 将CSRF令牌设置到cookie中
-    if (csrfToken) {
+    // 仅在生成新令牌时才设置cookie
+    if (newCookieNeeded) {
       response.headers.append('Set-Cookie', `csrf-token=${csrfToken}; Path=/admin; SameSite=Strict`);
     }
     
