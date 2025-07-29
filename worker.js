@@ -634,10 +634,13 @@ async function handle_admin(request){
   //新建页
   if(1==paths.length||"list"==paths[1]){
     //读取主题的admin/index.html源码
-    let theme_html=await getThemeHtml("admin/index"),
-        categoryJson=await getWidgetCategory(),
-        menuJson=await getWidgetMenu(),
-        linkJson=await getWidgetLink();
+    // 并行读取主题和配置数据
+    const [theme_html, categoryJson, menuJson, linkJson] = await Promise.all([
+      getThemeHtml("admin/index"),
+      getWidgetCategory(),
+      getWidgetMenu(),
+      getWidgetLink()
+    ]);
     // 使用 Mustache 渲染并传递 OPT
     html = Mustache.render(theme_html, {
         OPT,
@@ -765,14 +768,24 @@ async function handle_admin(request){
   
   //修改文章
   if("edit"==paths[1]){
-    let id=paths[2],
-        theme_html=await getThemeHtml("admin/edit"),
-        categoryJson=await getWidgetCategory(),
-        tagJson=await getWidgetTags(),
-        menuJson=await getWidgetMenu(),
-        linkJson=await getWidgetLink(),
-        recentlyArticles=await getRecentlyArticles(),
-        articleJson=await getArticle(id);
+    let id=paths[2];
+    const [
+        theme_html,
+        categoryJson,
+        tagJson,
+        menuJson,
+        linkJson,
+        recentlyArticles,
+        articleJson
+    ] = await Promise.all([
+        getThemeHtml("admin/edit"),
+        getWidgetCategory(),
+        getWidgetTags(),
+        getWidgetMenu(),
+        getWidgetLink(),
+        getRecentlyArticles(),
+        getArticle(id)
+    ]);
     html = Mustache.render(theme_html, {
         OPT,
         categoryJson: JSON.stringify(categoryJson),
