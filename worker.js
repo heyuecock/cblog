@@ -1125,7 +1125,8 @@ async function handle_admin(request){
       articles_all=sortArticle(articles_all),
       await saveArticlesList(JSON.stringify(articles_all))
       
-      // 精确清理缓存
+      // 清除文章列表缓存并清理CF缓存
+      MEMORY_CACHE.clear(); // 清除所有内存缓存以确保一致性
       await purge(['all']); // 新增文章影响较大，暂时清理所有
 
       json = '{"msg":"added OK","rst":true,"id":"'+id+'"}'
@@ -1789,7 +1790,10 @@ async function saveKV(key,value){
             if("object"==typeof value){
                 value=JSON.stringify(value)
             }
-            await CFBLOG.put(key,value)
+            await CFBLOG.put(key,value);
+            // 写入成功后，从内存缓存中删除该键
+            MEMORY_CACHE.data[key] = null;
+            console.log(`KV写入成功并清除缓存: ${key}`);
             return true
         }
         return false;
