@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>登录 - {{OPT.siteName}}</title>
+  <link rel="icon" href="{{OPT.logo}}">
+  <style>
+    body {
+      background: linear-gradient(135deg, #f7f8fa 0%, #e3e9f7 100%);
+      min-height: 100vh;
+      margin: 0;
+      font-family: 'PingFang SC', 'Microsoft YaHei', Arial, sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .login-box {
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 4px 32px rgba(0,0,0,0.10);
+      padding: 48px 36px 36px 36px;
+      width: 350px;
+      max-width: 90vw;
+      text-align: center;
+    }
+    .login-logo {
+      width: 72px;
+      height: 72px;
+      border-radius: 12px;
+      margin-bottom: 18px;
+    }
+    .login-title {
+      font-size: 24px;
+      font-weight: 700;
+      color: #007aff;
+      margin-bottom: 32px;
+      letter-spacing: 2px;
+    }
+    .login-form {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+    .login-form input {
+      padding: 12px 14px;
+      border: 1px solid #e0e0e0;
+      border-radius: 8px;
+      font-size: 16px;
+      outline: none;
+      transition: border 0.2s;
+    }
+    .login-form input:focus {
+      border: 1.5px solid #007aff;
+    }
+    .login-btn {
+      background: linear-gradient(90deg, #007aff 60%, #00c6fb 100%);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 12px 0;
+      font-size: 17px;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 8px;
+      transition: background 0.2s;
+    }
+    .login-btn:hover {
+      background: #005ecb;
+    }
+    .login-error {
+      background: #ffeaea;
+      color: #d93026;
+      border-radius: 6px;
+      padding: 8px 0;
+      margin-bottom: 10px;
+      font-size: 15px;
+    }
+    .login-back {
+      display: block;
+      margin-top: 24px;
+      color: #888;
+      text-decoration: none;
+      font-size: 15px;
+      transition: color 0.2s;
+    }
+    .login-back:hover {
+      color: #007aff;
+    }
+  </style>
+</head>
+<body>
+  <div class="login-box">
+    <img class="login-logo" src="{{OPT.logo}}" alt="logo">
+    <div class="login-title">{{OPT.siteName}} 管理登录</div>
+    {{#showError}}
+    <div class="login-error">用户名或密码错误</div>
+    {{/showError}}
+    <form class="login-form" method="POST" action="/login">
+      <input type="text" name="username" placeholder="用户名" required autofocus>
+      <input type="password" name="password" placeholder="密码" required>
+      <button class="login-btn" type="submit">登录</button>
+    </form>
+    <a class="login-back" href="/">← 返回博客首页</a>
+  </div>
+</body>
+</html>

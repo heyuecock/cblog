@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <title>设置 - {{OPT.siteName}}</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <link rel="icon" href="{{OPT.logo}}">
+  <link rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/3.4.1/css/bootstrap.min.css">
+  <script src="https://cdn.staticfile.org/jquery/2.2.4/jquery.min.js"></script>
+  <script src="https://cdn.staticfile.org/twitter-bootstrap/3.4.1/js/bootstrap.min.js"></script>
+  <style>
+    html, body { height: 100%; margin: 0; padding: 0; }
+    body { background: transparent; font-family: 'PingFang SC','Microsoft YaHei',Arial,sans-serif; }
+    .container { padding: 32px 28px; }
+    .panel-title { font-size: 22px; font-weight: 700; color: #007aff; margin-bottom: 24px; }
+    .setting-section { margin-bottom: 32px; }
+    .setting-section h4 { color: #007aff; margin-bottom: 12px; }
+    .list-group-item { display: flex; justify-content: space-between; align-items: center; }
+    .list-group-item .remove-btn { color: #d93026; cursor: pointer; }
+    .input-inline { display: flex; gap: 8px; margin-bottom: 10px; }
+    .input-inline input { flex: 1; }
+    .item-title { font-weight: 500; }
+    .item-url { color: #888; font-size: 13px; margin-left: 8px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="panel-title">博客设置</div>
+    <div class="setting-section">
+      <h4>分类管理</h4>
+      <ul class="list-group" id="catList">
+        {{#categoryJson}}
+        <li class="list-group-item">{{.}} <span class="remove-btn" data-type="category" data-value="{{.}}">删除</span></li>
+        {{/categoryJson}}
+      </ul>
+      <div class="input-inline">
+        <input type="text" class="form-control" id="newCat" placeholder="新分类名">
+        <button class="btn btn-primary" id="addCat">添加分类</button>
+      </div>
+    </div>
+    <div class="setting-section">
+      <h4>菜单管理</h4>
+      <table class="table table-bordered table-hover" id="menuTable">
+        <thead>
+          <tr>
+            <th style="width:35%">菜单名</th>
+            <th style="width:50%">菜单链接</th>
+            <th style="width:15%">操作</th>
+          </tr>
+        </thead>
+        <tbody>
+          {{#menuJson}}
+          <tr>
+            <td>{{title}}</td>
+            <td>{{url}}</td>
+            <td><button class="btn btn-link text-danger remove-btn" data-type="menu" data-value="{{title}}">删除</button></td>
+          </tr>
+          {{/menuJson}}
+        </tbody>
+      </table>
+      <div class="row" style="margin-bottom:10px;">
+        <div class="col-xs-5"><input type="text" class="form-control" id="newMenuTitle" placeholder="菜单名"></div>
+        <div class="col-xs-5"><input type="text" class="form-control" id="newMenuUrl" placeholder="菜单链接"></div>
+        <div class="col-xs-2"><button class="btn btn-primary btn-block" id="addMenu">添加菜单</button></div>
+      </div>
+    </div>
+    <div class="setting-section">
+      <h4>链接管理</h4>
+      <table class="table table-bordered table-hover" id="linkTable">
+        <thead>
+          <tr>
+            <th style="width:35%">链接名</th>
+            <th style="width:50%">链接地址</th>
+            <th style="width:15%">操作</th>
+          </tr>
+        </thead>
+        <tbody>
+          {{#linkJson}}
+          <tr>
+            <td>{{title}}</td>
+            <td>{{url}}</td>
+            <td><button class="btn btn-link text-danger remove-btn" data-type="link" data-value="{{title}}">删除</button></td>
+          </tr>
+          {{/linkJson}}
+        </tbody>
+      </table>
+      <div class="row" style="margin-bottom:10px;">
+        <div class="col-xs-5"><input type="text" class="form-control" id="newLinkTitle" placeholder="链接名"></div>
+        <div class="col-xs-5"><input type="text" class="form-control" id="newLinkUrl" placeholder="链接地址"></div>
+        <div class="col-xs-2"><button class="btn btn-primary btn-block" id="addLink">添加链接</button></div>
+      </div>
+    </div>
+    <div class="setting-section">
+      <h4>标签管理</h4>
+      <ul class="list-group" id="tagList">
+        {{#tagJson}}
+        <li class="list-group-item">{{.}} <span class="remove-btn" data-type="tag" data-value="{{.}}">删除</span></li>
+        {{/tagJson}}
+      </ul>
+      <div class="input-inline">
+        <input type="text" class="form-control" id="newTag" placeholder="新标签名">
+        <button class="btn btn-primary" id="addTag">添加标签</button>
+      </div>
+    </div>
+  </div>
+  <script>
+    // 分类
+    $('#addCat').click(function(){
+      let val = $('#newCat').val().trim();
+      if(val) saveSetting('WidgetCategory', val, 'add');
+    });
+    // 菜单
+    $('#addMenu').click(function(){
+      let title = $('#newMenuTitle').val().trim();
+      let url = $('#newMenuUrl').val().trim();
+      if(title && url) saveSetting('WidgetMenu', JSON.stringify({title: title, url: url}), 'add');
+    });
+    // 链接
+    $('#addLink').click(function(){
+      let title = $('#newLinkTitle').val().trim();
+      let url = $('#newLinkUrl').val().trim();
+      if(title && url) saveSetting('WidgetLink', JSON.stringify({title: title, url: url}), 'add');
+    });
+    // 标签
+    $('#addTag').click(function(){
+      let val = $('#newTag').val().trim();
+      if(val) saveSetting('WidgetTags', val, 'add');
+    });
+    // 删除
+    $('.remove-btn').click(function(){
+      let type = $(this).data('type');
+      let value = $(this).data('value');
+      saveSetting('Widget'+type.charAt(0).toUpperCase()+type.slice(1), value, 'remove');
+    });
+    // 保存设置
+    function saveSetting(type, value, action) {
+      $.ajax({
+        url: '/admin/saveConfig',
+        type: 'POST',
+        contentType: 'application/json',
+        data: JSON.stringify([{name: type, value: value}, {name: 'action', value: action}]),
+        success: function(res){
+          alert('操作成功');
+          location.reload();
+        },
+        error: function(){
+          alert('操作失败');
+        }
+      });
+    }
+  </script>
+</body>
+</html>

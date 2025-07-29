@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <title>发布/导入导出 - {{OPT.siteName}}</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <link rel="icon" href="{{OPT.logo}}">
+  <link rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/3.4.1/css/bootstrap.min.css">
+  <script src="https://cdn.staticfile.org/jquery/2.2.4/jquery.min.js"></script>
+  <script src="https://cdn.staticfile.org/twitter-bootstrap/3.4.1/js/bootstrap.min.js"></script>
+  <style>
+    body { background: transparent; font-family: 'PingFang SC','Microsoft YaHei',Arial,sans-serif; }
+    .container { padding: 32px 28px; }
+    .panel-title { font-size: 22px; font-weight: 700; color: #007aff; margin-bottom: 24px; }
+    .publish-section { margin-bottom: 32px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="panel-title">发布/导入导出</div>
+    <div class="publish-section">
+      <button class="btn btn-primary" id="btnPublish">发布所有文章（整理标签并清理缓存）</button>
+    </div>
+    <div class="publish-section">
+      <button class="btn btn-default" id="btnExport">导出JSON</button>
+      <button class="btn btn-default" id="btnExportSitemap">导出sitemap.xml</button>
+      <button class="btn btn-default" id="btnExportSearch">导出search.xml</button>
+      <button class="btn btn-default" id="btnImport">导入JSON</button>
+      <input type="file" id="importFile" style="display:none;">
+    </div>
+  </div>
+  <script>
+    $('#btnPublish').click(function(){
+      $.get('/admin/publish', function(res){
+        let data;
+        try {
+          data = typeof res === 'string' ? JSON.parse(res) : res;
+        } catch (e) {
+          alert('发布失败，返回内容不是有效的JSON，可能未登录或服务端异常。');
+          return;
+        }
+        alert(data.msg || '已发布');
+      });
+    });
+    $('#btnExport').click(function(){
+      window.open('/admin/export');
+    });
+    $('#btnExportSitemap').click(function(){
+      window.open('/admin/sitemap.xml');
+    });
+    $('#btnExportSearch').click(function(){
+      window.open('/admin/search.xml');
+    });
+    $('#btnImport').click(function(){
+      $('#importFile').click();
+    });
+    $('#importFile').change(function(e){
+      let file = e.target.files[0];
+      if(!file) return;
+      let reader = new FileReader();
+      reader.onload = function(evt){
+        let content = evt.target.result;
+        $.ajax({
+          url: '/admin/import',
+          type: 'POST',
+          contentType: 'application/json',
+          data: JSON.stringify([{name:'importJson', value: content}]),
+          success: function(res){
+            alert('导入成功');
+          },
+          error: function(){
+            alert('导入失败');
+          }
+        });
+      };
+      reader.readAsText(file);
+    });
+  </script>
+</body>
+</html>

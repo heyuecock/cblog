@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <title>编辑文章 - {{OPT.siteName}}</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <link rel="icon" href="{{OPT.logo}}">
+  <link rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/3.4.1/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/editor.md@1.5.0/css/editormd.min.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-tagsinput/0.8.0/bootstrap-tagsinput.css" />
+  <script src="https://cdn.staticfile.org/jquery/2.2.4/jquery.min.js"></script>
+  <script src="https://cdn.staticfile.org/twitter-bootstrap/3.4.1/js/bootstrap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/editor.md@1.5.0/editormd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/typeahead.js/0.11.1/typeahead.bundle.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-tagsinput/0.8.0/bootstrap-tagsinput.min.js"></script>
+  <style>
+    body { background: transparent; font-family: 'PingFang SC','Microsoft YaHei',Arial,sans-serif; }
+    .container { padding: 32px 28px; min-height: 700px; }
+    .bootstrap-tagsinput { width: 100%; }
+    .label-info { background-color: #007aff; }
+    .twitter-typeahead .tt-menu {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      z-index: 1000;
+      display: none;
+      float: left;
+      min-width: 160px;
+      padding: 5px 0;
+      margin: 2px 0 0;
+      list-style: none;
+      font-size: 14px;
+      text-align: left;
+      background-color: #ffffff;
+      border: 1px solid #cccccc;
+      border: 1px solid rgba(0, 0, 0, 0.15);
+      border-radius: 4px;
+      -webkit-box-shadow: 0 6px 12px rgba(0, 0, 0, 0.175);
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.175);
+      background-clip: padding-box;
+    }
+    .twitter-typeahead .tt-suggestion {
+      display: block;
+      padding: 3px 20px;
+      clear: both;
+      font-weight: normal;
+      line-height: 1.42857143;
+      color: #333333;
+      white-space: nowrap;
+    }
+    .twitter-typeahead .tt-suggestion.tt-cursor,
+    .twitter-typeahead .tt-suggestion:hover,
+    .twitter-typeahead .tt-suggestion:focus {
+      color: #ffffff;
+      text-decoration: none;
+      outline: 0;
+      background-color: #007aff;
+    }
+    .panel-title { font-size: 22px; font-weight: 700; color: #007aff; margin-bottom: 24px; }
+    .btn-primary { background: #007aff; border-color: #007aff; }
+    .btn-primary:hover { background: #005ecb; border-color: #005ecb; }
+    .form-group label { font-weight: 500; }
+    .form-control:focus { border-color: #007aff; box-shadow: 0 0 0 2px rgba(0,122,255,0.08);}
+    .edit-actions { margin-top: 24px; }
+    .edit-actions .btn { margin-right: 12px; }
+    #md-editor { min-height: 600px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="panel-title">编辑文章</div>
+    <form id="editForm">
+      <input type="hidden" name="id" value="{{articleJson.id}}">
+      <div class="form-group">
+        <label>标题</label>
+        <input type="text" class="form-control" name="title" value="{{articleJson.title}}" required>
+      </div>
+      <div class="form-group">
+        <label>分类 (输入可自动提示，按回车添加)</label>
+        <input type="text" class="form-control" name="category" id="category-input" data-role="tagsinput" value="{{articleJson.category}}">
+      </div>
+      <div class="form-group">
+        <label>标签 (输入可自动提示，按回车添加)</label>
+        <input type="text" class="form-control" name="tags" id="tags-input" data-role="tagsinput" value="{{articleJson.tags}}">
+      </div>
+      <div class="form-group">
+        <label>封面图片URL</label>
+        <input type="text" class="form-control" name="img" value="{{articleJson.img}}">
+      </div>
+      <div class="form-group">
+        <label>永久链接</label>
+        <input type="text" class="form-control" name="link" value="{{articleJson.link}}">
+      </div>
+      <div class="form-group">
+        <label>内容（Markdown）</label>
+        <div id="md-editor">
+          <textarea style="display:none;" name="content-markdown-doc" id="content-markdown-doc">{{articleJson.contentMD}}</textarea>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>权重</label>
+        <input type="text" class="form-control" name="priority" value="{{articleJson.priority}}">
+      </div>
+      <div class="form-group">
+        <label>更新频率</label>
+        <input type="text" class="form-control" name="changefreq" value="{{articleJson.changefreq}}">
+      </div>
+      <div class="form-group">
+        <label>置顶</label>
+        <select class="form-control" name="top_timestamp">
+          <option value="0" {{^articleJson.top_timestamp}}selected{{/articleJson.top_timestamp}}>否</option>
+          <option value="1" {{#articleJson.top_timestamp}}selected{{/articleJson.top_timestamp}}>是</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>隐藏</label>
+        <select class="form-control" name="hidden">
+          <option value="0" {{^articleJson.hidden}}selected{{/articleJson.hidden}}>否</option>
+          <option value="1" {{#articleJson.hidden}}selected{{/articleJson.hidden}}>是</option>
+        </select>
+      </div>
+      <div class="edit-actions">
+        <button type="submit" class="btn btn-primary">保存</button>
+        <button type="button" class="btn btn-danger" id="btnDelete">删除</button>
+      </div>
+    </form>
+  </div>
+  <div id="category-data" style="display: none;">{{{categoryJson}}}</div>
+  <div id="tag-data" style="display: none;">{{{tagJson}}}</div>
+  <script>
+    // 初始化 Editor.md
+    var editor = editormd("md-editor", {
+      width: "100%",
+      height: 600,
+      path: "https://cdn.jsdelivr.net/npm/editor.md@1.5.0/lib/",
+      saveHTMLToTextarea: true,
+      emoji: true,
+      syncScrolling: "single",
+      toolbarAutoFixed: false,
+      onchange: function() {
+        // 实时同步 markdown 到 html
+        $('#content-html-code').val(editor.getHTML());
+      }
+    });
+
+    // 初始化 Tags Input
+    $(document).ready(function() {
+      var category_data = JSON.parse($('#category-data').text() || '[]');
+      var categories = new Bloodhound({
+          datumTokenizer: Bloodhound.tokenizers.whitespace,
+          queryTokenizer: Bloodhound.tokenizers.whitespace,
+          local: category_data
+      });
+      categories.initialize();
+      $('#category-input').tagsinput({
+          typeaheadjs: {
+              source: categories.ttAdapter()
+          }
+      });
+
+      var tag_data = JSON.parse($('#tag-data').text() || '[]');
+      var tags = new Bloodhound({
+          datumTokenizer: Bloodhound.tokenizers.whitespace,
+          queryTokenizer: Bloodhound.tokenizers.whitespace,
+          local: tag_data
+      });
+      tags.initialize();
+      $('#tags-input').tagsinput({
+          typeaheadjs: {
+              source: tags.ttAdapter()
+          }
+      });
+    });
+    // 表单提交保存
+    $('#editForm').submit(function(e){
+      e.preventDefault();
+      // 同步 markdown 到 html
+      $('#content-html-code').val(editor.getHTML());
+      var formData = $(this).serializeArray();
+      $.ajax({
+        url: '/admin/saveEdit',
+        type: 'POST',
+        data: formData,
+        success: function(res){
+          let data = typeof res === 'string' ? JSON.parse(res) : res;
+          if(data.rst){
+            alert('保存成功');
+          }else{
+            alert('保存失败：'+(data.msg||'未知错误'));
+          }
+        }
+      });
+    });
+    // 删除
+    $('#btnDelete').click(function(){
+      if(confirm('确定要删除这篇文章吗？此操作不可恢复！')){
+        var id = $('input[name="id"]').val();
+        $.get('/admin/delete/'+id, function(res){
+          let data = typeof res === 'string' ? JSON.parse(res) : res;
+          if(data.status === 'success'){
+            alert('删除成功');
+            window.location.href = '/admin';
+          }else{
+            alert('删除失败：'+(data.message||'未知错误'));
+          }
+        });
+      }
+    });
+  </script>
+</body>
+</html>

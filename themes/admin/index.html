@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <title>{{OPT.siteName}} 博客后台</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <link rel="icon" href="{{OPT.logo}}">
+  <link rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/3.4.1/css/bootstrap.min.css">
+  <script src="https://cdn.staticfile.org/jquery/2.2.4/jquery.min.js"></script>
+  <script src="https://cdn.staticfile.org/twitter-bootstrap/3.4.1/js/bootstrap.min.js"></script>
+  <style>
+    html, body { height: 100%; margin: 0; padding: 0; overflow: hidden; }
+    body { background: #f7f8fa; font-family: 'PingFang SC','Microsoft YaHei',Arial,sans-serif; }
+    .navbar { border-radius: 0; margin-bottom: 0; box-shadow: 0 2px 8px rgba(0,0,0,0.04); position: fixed; top: 0; left: 0; right: 0; z-index: 100; height: 60px; }
+    .navbar-brand { font-weight: bold; color: #007aff !important; }
+    .main-layout { display: flex; height: 100vh; }
+    .sidebar { width: 220px; background: #fff; height: 100vh; position: fixed; left: 0; top: 60px; bottom: 0; overflow-y: auto; z-index: 10; border-radius: 0 12px 12px 0; box-shadow: 0 2px 12px rgba(0,0,0,0.06);}
+    .sidebar .nav > li > a { color: #333; font-size: 16px; border-radius: 0 20px 20px 0; }
+    .sidebar .nav > li.active > a, .sidebar .nav > li > a:hover { background: #f0f4fa; color: #007aff; }
+    .content-area { margin-left: 220px; margin-top: 60px; height: calc(100vh - 60px); overflow-y: auto; background: #f7f8fa; padding: 0 28px; width: calc(100vw - 220px); }
+    .main-panel { background: #fff; border-radius: 12px; box-shadow: 0 2px 12px rgba(0,0,0,0.06); padding: 32px 28px; min-height: 600px; margin-top: 0; }
+    .panel-title { font-size: 22px; font-weight: 700; color: #007aff; margin-bottom: 24px; }
+    .btn-primary { background: #007aff; border-color: #007aff; }
+    .btn-primary:hover { background: #005ecb; border-color: #005ecb; }
+    .table > thead > tr > th { color: #007aff; background: #f7f8fa; }
+    .table > tbody > tr:hover { background: #f0f4fa; }
+    .form-control:focus { border-color: #007aff; box-shadow: 0 0 0 2px rgba(0,122,255,0.08);}
+    .tab-content > .tab-pane { margin-top: 18px; }
+    .import-export-btns { margin-bottom: 18px; }
+    @media (max-width: 900px) {
+      .sidebar { margin-bottom: 18px; }
+      .main-panel { padding: 18px 8px; }
+      .content-area { padding: 12px 4px; }
+    }
+  </style>
+</head>
+<body>
+  <!-- 顶部导航 -->
+  <nav class="navbar navbar-default">
+    <div class="container-fluid">
+      <div class="navbar-header">
+        <a class="navbar-brand" href="/"><img src="{{OPT.logo}}" style="height:32px;display:inline;margin-right:8px;border-radius:8px;">{{OPT.siteName}}</a>
+      </div>
+      <ul class="nav navbar-nav navbar-right">
+        <li><a href="/" target="_blank">博客首页</a></li>
+        <li class="active"><a href="/admin">后台管理</a></li>
+        <li><a href="/logout">退出</a></li>
+      </ul>
+    </div>
+  </nav>
+  <div class="main-layout">
+    <div class="sidebar">
+      <ul class="nav nav-pills nav-stacked" id="myTab">
+        <li class="active"><a href="#list" data-toggle="tab">我的文章</a></li>
+        <li><a href="#new" data-toggle="tab">新建文章</a></li>
+        <li><a href="#setting" data-toggle="tab">设置</a></li>
+        <li><a href="#publish" data-toggle="tab">发布/导入导出</a></li>
+      </ul>
+    </div>
+    <div class="content-area">
+      <div class="main-panel tab-content">
+        <!-- 文章列表 -->
+        <div class="tab-pane fade in active" id="list">
+          <div class="panel-title">文章管理</div>
+          <div class="import-export-btns">
+            <button class="btn btn-primary" id="btnAddNew">+ 新建文章</button>
+            <button class="btn btn-danger" id="btnBatchDelete">批量删除</button>
+            <input type="file" id="importFile" style="display:none;">
+          </div>
+          <table class="table table-hover" style="margin-top:18px;">
+            <thead>
+              <tr>
+                <th><input type="checkbox" id="checkAll"></th>
+                <th>标题</th>
+                <th>分类</th>
+                <th>标签</th>
+                <th>创建时间</th>
+                <th>操作</th>
+              </tr>
+            </thead>
+            <tbody id="articleList">
+              <!-- 文章列表由 JS 渲染 -->
+            </tbody>
+          </table>
+          <nav>
+            <ul class="pagination" id="pagination"></ul>
+          </nav>
+        </div>
+        <!-- 新建文章 -->
+        <div class="tab-pane fade" id="new">
+          <iframe src="/admin/edit" style="width: 100%; height: calc(100vh - 80px); border: none; border-radius: 8px; background: #fff;"></iframe>
+        </div>
+        <!-- 设置 -->
+        <div class="tab-pane fade" id="setting">
+          <iframe src="/admin/setting" style="width:100%;height:800px;border:none;border-radius:8px;background:#fff;"></iframe>
+        </div>
+        <!-- 发布/导入导出 -->
+        <div class="tab-pane fade" id="publish">
+          <iframe src="/admin/publish" style="width:100%;height:800px;border:none;border-radius:8px;background:#fff;"></iframe>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script>
+    // 文章分页与渲染
+    function loadArticleList(page=1) {
+      $.get('/admin/getList/'+page, function(data){
+        let response = typeof data === 'string' ? JSON.parse(data) : data;
+        let list = response.articles;
+        let html = '';
+        for(let i=0;i<list.length;i++){
+          html += '<tr>';
+          html += '<td><input type="checkbox" class="check-item" value="'+list[i].id+'"></td>';
+          html += '<td><a href="/admin/edit/'+list[i].id+'" target="_blank">'+list[i].title+'</a></td>';
+          html += '<td>'+(list[i].category && list[i].category[0] ? list[i].category[0] : '')+'</td>';
+          html += '<td>'+(list[i].tags ? list[i].tags.join(' ') : '')+'</td>';
+          html += '<td>'+list[i].createDate.substr(0,10)+'</td>';
+          html += '<td><a href="/admin/edit/'+list[i].id+'" target="_blank" style="color:#007aff;">编辑</a> <a href="#" class="delete-article" data-id="'+list[i].id+'" style="color:#d93026;margin-left:10px;">删除</a></td>';
+          html += '</tr>';
+        }
+        $('#articleList').html(html);
+        renderPagination(response.currentPage, response.totalPages);
+      });
+    }
+
+    function renderPagination(currentPage, totalPages) {
+      const container = $('#pagination');
+      container.empty();
+
+      if (totalPages <= 1) return;
+
+      // 上一页
+      let prevLi = $('<li><a href="#">&laquo;</a></li>');
+      if (currentPage === 1) {
+        prevLi.addClass('disabled');
+      } else {
+        prevLi.find('a').click(function(e) {
+          e.preventDefault();
+          loadArticleList(currentPage - 1);
+        });
+      }
+      container.append(prevLi);
+
+      // 页码
+      for (let i = 1; i <= totalPages; i++) {
+        let pageLi = $('<li><a href="#">' + i + '</a></li>');
+        if (i === currentPage) {
+          pageLi.addClass('active');
+        }
+        pageLi.find('a').click(function(e) {
+          e.preventDefault();
+          loadArticleList(i);
+        });
+        container.append(pageLi);
+      }
+
+      // 下一页
+      let nextLi = $('<li><a href="#">&raquo;</a></li>');
+      if (currentPage === totalPages) {
+        nextLi.addClass('disabled');
+      } else {
+        nextLi.find('a').click(function(e) {
+          e.preventDefault();
+          loadArticleList(currentPage + 1);
+        });
+      }
+      container.append(nextLi);
+    }
+    // 全选
+    $('#checkAll').on('change', function(){
+      $('.check-item').prop('checked', this.checked);
+    });
+    // 批量删除
+    $('#btnBatchDelete').click(function(){
+      var ids = $('.check-item:checked').map(function(){ return this.value; }).get();
+      if(ids.length === 0) return alert('请选择要删除的文章');
+      if(confirm('确定要批量删除选中的文章吗？')){
+        $.ajax({
+          url: '/admin/batchDelete',
+          type: 'POST',
+          contentType: 'application/json',
+          data: JSON.stringify(ids),
+          success: function(res){
+            let data = typeof res === 'string' ? JSON.parse(res) : res;
+            if(data.rst){
+              alert('批量删除成功');
+              loadArticleList();
+            } else {
+              alert('批量删除失败：' + (data.msg || '未知错误'));
+            }
+          },
+          error: function(){
+            alert('批量删除请求失败');
+          }
+        });
+      }
+    });
+    // 删除文章
+    $(document).on('click', '.delete-article', function(e){
+      e.preventDefault();
+      let id = $(this).data('id');
+      if(confirm('确定要删除这篇文章吗？此操作不可恢复！')){
+        $.get('/admin/delete/'+id, function(res){
+          let data = typeof res === 'string' ? JSON.parse(res) : res;
+          if(data.status === 'success'){
+            alert('删除成功');
+            loadArticleList();
+          }else{
+            alert('删除失败：'+(data.message||'未知错误'));
+          }
+        });
+      }
+    });
+    // 新建文章按钮
+    $('#btnAddNew').click(function(){
+      $('#myTab a[href="#new"]').tab('show');
+    });
+    $('#importFile').change(function(e){
+      let file = e.target.files[0];
+      if(!file) return;
+      let reader = new FileReader();
+      reader.onload = function(evt){
+        let content = evt.target.result;
+        $.ajax({
+          url: '/admin/import',
+          type: 'POST',
+          contentType: 'application/json',
+          data: JSON.stringify([{name:'importJson', value: content}]),
+          success: function(res){
+            alert('导入成功');
+            loadArticleList();
+          },
+          error: function(){
+            alert('导入失败');
+          }
+        });
+      };
+      reader.readAsText(file);
+    });
+    // Tab切换时刷新文章列表
+    $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+      if($(e.target).attr('href')==='#list'){
+        loadArticleList();
+      }
+    });
+    // 页面加载时加载文章列表
+    $(function(){
+      loadArticleList();
+    });
+    // CSRF protection: Add CSRF token to all fetch requests
+    const originalFetch = window.fetch;
+    window.fetch = function(url, options) {
+      if (options && options.method && options.method.toUpperCase() !== 'GET') {
+        const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+        if (csrfToken) {
+          if (!options.headers) {
+            options.headers = {};
+          }
+          options.headers['x-csrf-token'] = csrfToken;
+        }
+      }
+      return originalFetch(url, options);
+    };
+  </script>
+</body>
+</html>

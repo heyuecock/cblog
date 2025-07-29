@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+  <title>{{title}}</title>
+  <meta name="description" content="{{OPT.siteDescription}}">
+  <meta name="keywords" content="{{keyWords}}">
+  <link rel="icon" href="{{OPT.logo}}">
+  <style>
+    :root {
+      --main-color: #007aff;
+      --main-bg: #f7f8fa;
+      --card-bg: #fff;
+      --border-radius: 14px;
+      --shadow: 0 2px 16px rgba(0,0,0,0.06);
+      --font-main: 'PingFang SC', 'Microsoft YaHei', 'Segoe UI', Arial, sans-serif;
+    }
+    body {
+      background: var(--main-bg);
+      font-family: var(--font-main);
+      color: #222;
+      margin: 0;
+      padding: 0;
+      line-height: 1.8;
+    }
+    .navbar {
+      background: #fff;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 32px;
+      height: 64px;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    .navbar .logo {
+      display: flex;
+      align-items: center;
+      font-size: 26px;
+      font-weight: bold;
+      color: var(--main-color);
+      letter-spacing: 2px;
+      text-decoration: none;
+    }
+    .navbar .logo img {
+      height: 38px;
+      margin-right: 10px;
+      border-radius: 8px;
+    }
+    .navbar .nav {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+    }
+    .navbar .nav a {
+      color: #333;
+      font-size: 16px;
+      text-decoration: none;
+      padding: 6px 12px;
+      border-radius: 6px;
+      transition: background 0.2s, color 0.2s;
+    }
+    .navbar .nav a:hover {
+      background: var(--main-color);
+      color: #fff;
+    }
+    .navbar .user {
+      font-size: 15px;
+      color: #888;
+    }
+    .container {
+      display: flex;
+      max-width: 1200px;
+      margin: 36px auto 0 auto;
+      gap: 32px;
+      padding: 0 16px;
+    }
+    .main {
+      flex: 1 1 0;
+      min-width: 0;
+    }
+    .sidebar {
+      width: 320px;
+      flex-shrink: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+    .widget {
+      background: var(--card-bg);
+      border-radius: var(--border-radius);
+      box-shadow: var(--shadow);
+      padding: 18px 20px;
+    }
+    .widget-title {
+      font-size: 17px;
+      font-weight: 600;
+      color: var(--main-color);
+      margin-bottom: 12px;
+    }
+    .recent-list, .cat-list {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+    .recent-list li {
+      display: flex;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+    .recent-list img {
+      width: 48px;
+      height: 32px;
+      border-radius: 6px;
+      object-fit: cover;
+      margin-right: 10px;
+    }
+    .recent-list a {
+      color: #333;
+      font-size: 15px;
+      font-weight: 500;
+      text-decoration: none;
+      transition: color 0.2s;
+      flex: 1 1 0;
+      min-width: 0;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .recent-list a:hover {
+      color: var(--main-color);
+    }
+    .cat-list li {
+      margin-bottom: 8px;
+    }
+    .cat-list a {
+      color: #555;
+      text-decoration: none;
+      font-size: 15px;
+      transition: color 0.2s;
+    }
+    .cat-list a:hover {
+      color: var(--main-color);
+    }
+    .tag-cloud {
+      margin-top: 8px;
+    }
+    .tag-cloud a {
+      display: inline-block;
+      background: #f0f4fa;
+      color: #007aff;
+      border-radius: 6px;
+      padding: 4px 12px;
+      margin: 4px 6px 0 0;
+      font-size: 14px;
+      text-decoration: none;
+      transition: background 0.2s, color 0.2s;
+    }
+    .tag-cloud a:hover {
+      background: var(--main-color);
+      color: #fff;
+    }
+    .article-card {
+      background: var(--card-bg);
+      border-radius: var(--border-radius);
+      box-shadow: var(--shadow);
+      padding: 32px 40px;
+    }
+    .article-card h1 {
+      font-size: 28px;
+      margin: 0 0 12px 0;
+    }
+    .article-meta {
+      color: #888;
+      font-size: 14px;
+      margin-bottom: 24px;
+    }
+    .article-content {
+      font-size: 16px;
+      line-height: 1.8;
+    }
+    .article-content img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 8px;
+    }
+    .post-nav {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 24px;
+      padding: 16px;
+      background: var(--card-bg);
+      border-radius: var(--border-radius);
+      box-shadow: var(--shadow);
+    }
+    .post-nav a {
+      color: var(--main-color);
+      text-decoration: none;
+      font-weight: 500;
+    }
+    .article-content pre {
+      position: relative;
+      background-color: #282c34;
+      color: #abb2bf;
+      padding: 20px;
+      border-radius: 8px;
+      overflow-x: auto;
+      font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, Courier, monospace;
+      font-size: 14px;
+      line-height: 1.6;
+      margin: 20px 0;
+    }
+    .article-content pre code {
+      padding: 0;
+      background: none;
+      color: inherit;
+    }
+    .copy-button {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      padding: 6px 12px;
+      background-color: rgba(255, 255, 255, 0.1);
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.2s;
+      opacity: 0;
+      z-index: 10;
+    }
+    .article-content pre:hover .copy-button {
+      opacity: 1;
+    }
+    .copy-button.success {
+      background-color: #28a745;
+      color: white;
+    }
+    @media (max-width: 900px) {
+      .container {
+        flex-direction: column;
+        gap: 0;
+      }
+      .sidebar {
+        width: 100%;
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 16px;
+        margin-top: 24px;
+      }
+      .widget {
+        flex: 1 1 200px;
+        margin-bottom: 0;
+      }
+      .article-card {
+        padding: 24px 18px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="navbar">
+    <a class="logo" href="/">
+      <img src="{{OPT.logo}}" alt="logo">{{OPT.siteName}}
+    </a>
+    <nav class="nav">
+      <a href="/">首页</a>
+      <a href="/page/1">技术文章</a>
+      <a href="/admin">管理</a>
+    </nav>
+    <div class="user">
+      <a href="/login" style="color:#007aff;text-decoration:none;">登录</a>
+    </div>
+  </div>
+  <div class="container">
+    <main class="main">
+      <div class="article-card">
+        <h1>{{articleSingle.title}}</h1>
+        <div class="article-meta">
+          <span>发布于 {{articleSingle.createDate}}</span>
+        </div>
+        <div class="article-content">
+          {{{articleSingle.contentHtml}}}
+        </div>
+      </div>
+      <div class="post-nav">
+        {{#articleOlder.0}}
+        <a href="{{url}}" class="prev">‹ 上一篇: {{title}}</a>
+        {{/articleOlder.0}}
+        {{#articleNewer.0}}
+        <a href="{{url}}" class="next">下一篇: {{title}} ›</a>
+        {{/articleNewer.0}}
+      </div>
+    </main>
+    <aside class="sidebar">
+      <div class="widget">
+        <div class="widget-title">近期文章</div>
+        <ul class="recent-list">
+          {{#widgetRecentlyList}}
+          <li>
+            <img src="{{img}}" alt="{{title}}" loading="lazy" onerror="this.src='https://cdn.jsdelivr.net/gh/Arronlong/cdn@master/cfblog/cfblog-plus.png'">
+            <a href="{{url}}">{{title}}</a>
+          </li>
+          {{/widgetRecentlyList}}
+        </ul>
+      </div>
+      <div class="widget">
+        <div class="widget-title">分类目录</div>
+        <ul class="cat-list">
+          {{#widgetCategoryList}}
+          <li><a href="/category/{{.}}">{{.}}</a></li>
+          {{/widgetCategoryList}}
+        </ul>
+      </div>
+      <div class="widget">
+        <div class="widget-title">标签云</div>
+        <div class="tag-cloud">
+          {{#widgetTagsList}}
+          <a href="/tags/{{.}}">{{.}}</a>
+          {{/widgetTagsList}}
+        </div>
+      </div>
+    </aside>
+  </div>
+  <footer style="text-align:center;color:#aaa;font-size:14px;margin:40px 0 20px 0;">
+    {{OPT.copyRight}}
+  </footer>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const codeBlocks = document.querySelectorAll('.article-content pre');
+      if (codeBlocks.length > 0) {
+        codeBlocks.forEach(function(preElement) {
+          const codeText = preElement.querySelector('code').innerText;
+          const copyButton = document.createElement('button');
+          copyButton.className = 'copy-button';
+          copyButton.setAttribute('aria-label', '复制代码');
+          copyButton.innerHTML = '<span>复制</span>';
+          preElement.appendChild(copyButton);
+          
+          copyButton.addEventListener('click', function() {
+            navigator.clipboard.writeText(codeText).then(function() {
+              copyButton.classList.add('success');
+              copyButton.innerHTML = '<span>已复制!</span>';
+              setTimeout(() => {
+                copyButton.classList.remove('success');
+                copyButton.innerHTML = '<span>复制</span>';
+              }, 2000);
+            });
+          });
+        });
+      }
+    });
+  </script>
+</body>
+</html>

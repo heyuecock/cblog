@@ -1,0 +1,15 @@
+name = "cfblog"
+main = "worker.js"
+compatibility_date = "2025-07-29"
+
+[[rules]]
+type = "ESModule"
+globs = ["**/*.js"]
+
+[[rules]]
+type = "Text"
+globs = ["**/*.html"]
+
+[[rules]]
+type = "Data"
+globs = ["**/*.png"]

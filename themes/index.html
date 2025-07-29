@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+  <title>{{OPT.siteName}}</title>
+  <meta name="description" content="{{OPT.siteDescription}}">
+  <meta name="keywords" content="{{OPT.keyWords}}">
+  <link rel="icon" href="{{OPT.logo}}">
+  <style>
+    :root {
+      --main-color: #007aff;
+      --main-bg: #f7f8fa;
+      --card-bg: #fff;
+      --border-radius: 14px;
+      --shadow: 0 2px 16px rgba(0,0,0,0.06);
+      --font-main: 'PingFang SC', 'Microsoft YaHei', 'Segoe UI', Arial, sans-serif;
+    }
+    body {
+      background: var(--main-bg);
+      font-family: var(--font-main);
+      color: #222;
+      margin: 0;
+      padding: 0;
+      line-height: 1.8;
+    }
+    .navbar {
+      background: #fff;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 32px;
+      height: 64px;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    .navbar .logo {
+      display: flex;
+      align-items: center;
+      font-size: 26px;
+      font-weight: bold;
+      color: var(--main-color);
+      letter-spacing: 2px;
+      text-decoration: none;
+    }
+    .navbar .logo img {
+      height: 38px;
+      margin-right: 10px;
+      border-radius: 8px;
+    }
+    .navbar .nav {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+    }
+    .navbar .nav a {
+      color: #333;
+      font-size: 16px;
+      text-decoration: none;
+      padding: 6px 12px;
+      border-radius: 6px;
+      transition: background 0.2s, color 0.2s;
+    }
+    .navbar .nav a:hover {
+      background: var(--main-color);
+      color: #fff;
+    }
+    .navbar .user {
+      font-size: 15px;
+      color: #888;
+    }
+    .container {
+      display: flex;
+      max-width: 1200px;
+      margin: 36px auto 0 auto;
+      gap: 32px;
+      padding: 0 16px;
+    }
+    .main {
+      flex: 1 1 0;
+      min-width: 0;
+    }
+    .card-list {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+    .card {
+      background: var(--card-bg);
+      border-radius: var(--border-radius);
+      box-shadow: var(--shadow);
+      display: flex;
+      align-items: flex-start;
+      margin-bottom: 28px;
+      padding: 24px 28px;
+      transition: box-shadow 0.2s, transform 0.2s;
+      gap: 22px;
+    }
+    .card:hover {
+      box-shadow: 0 8px 32px rgba(0,122,255,0.10);
+      transform: translateY(-2px) scale(1.01);
+    }
+    .card-img {
+      width: 120px;
+      height: 80px;
+      object-fit: cover;
+      border-radius: 8px;
+      background: #f0f0f0;
+      flex-shrink: 0;
+    }
+    .card-content {
+      flex: 1 1 0;
+      min-width: 0;
+    }
+    .card-title {
+      font-size: 20px;
+      font-weight: 600;
+      margin: 0 0 8px 0;
+      color: #222;
+      text-decoration: none;
+      transition: color 0.2s;
+      display: block;
+    }
+    .card-title:hover {
+      color: var(--main-color);
+    }
+    .card-meta {
+      color: #888;
+      font-size: 14px;
+      margin-bottom: 8px;
+    }
+    .card-summary {
+      color: #555;
+      font-size: 15px;
+      margin-bottom: 8px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+    }
+    .sidebar {
+      width: 320px;
+      flex-shrink: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+    .widget {
+      background: var(--card-bg);
+      border-radius: var(--border-radius);
+      box-shadow: var(--shadow);
+      padding: 18px 20px;
+    }
+    .widget-title {
+      font-size: 17px;
+      font-weight: 600;
+      color: var(--main-color);
+      margin-bottom: 12px;
+    }
+    .recent-list, .cat-list {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+    .recent-list li {
+      display: flex;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+    .recent-list img {
+      width: 48px;
+      height: 32px;
+      border-radius: 6px;
+      object-fit: cover;
+      margin-right: 10px;
+    }
+    .recent-list a {
+      color: #333;
+      font-size: 15px;
+      font-weight: 500;
+      text-decoration: none;
+      transition: color 0.2s;
+      flex: 1 1 0;
+      min-width: 0;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .recent-list a:hover {
+      color: var(--main-color);
+    }
+    .cat-list li {
+      margin-bottom: 8px;
+    }
+    .cat-list a {
+      color: #555;
+      text-decoration: none;
+      font-size: 15px;
+      transition: color 0.2s;
+    }
+    .cat-list a:hover {
+      color: var(--main-color);
+    }
+    .tag-cloud {
+      margin-top: 8px;
+    }
+    .tag-cloud a {
+      display: inline-block;
+      background: #f0f4fa;
+      color: #007aff;
+      border-radius: 6px;
+      padding: 4px 12px;
+      margin: 4px 6px 0 0;
+      font-size: 14px;
+      text-decoration: none;
+      transition: background 0.2s, color 0.2s;
+    }
+    .tag-cloud a:hover {
+      background: var(--main-color);
+      color: #fff;
+    }
+    @media (max-width: 900px) {
+      .container {
+        flex-direction: column;
+        gap: 0;
+      }
+      .sidebar {
+        width: 100%;
+        flex-direction: row;
+        gap: 0;
+        margin-top: 24px;
+      }
+      .widget {
+        width: 100%;
+        margin-bottom: 18px;
+      }
+      .card {
+        flex-direction: column;
+        align-items: stretch;
+        padding: 18px 12px;
+      }
+      .card-img {
+        width: 100%;
+        height: 160px;
+        margin: 0 0 12px 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="navbar">
+    <a class="logo" href="/">
+      <img src="{{OPT.logo}}" alt="logo">{{OPT.siteName}}
+    </a>
+    <nav class="nav">
+      <a href="/">首页</a>
+      <a href="/page/1">技术文章</a>
+      <a href="/admin">管理</a>
+    </nav>
+    <div class="user">
+      <a href="/login" style="color:#007aff;text-decoration:none;">登录</a>
+    </div>
+  </div>
+  <div class="container">
+    <main class="main">
+      <ul class="card-list">
+        {{#articleList}}
+        <li class="card">
+          <img class="card-img" src="{{img}}" alt="{{title}}" loading="lazy" onerror="this.src='https://cdn.jsdelivr.net/gh/Arronlong/cdn@master/cfblog/cfblog-plus.png'">
+          <div class="card-content">
+            <a class="card-title" href="{{url}}">{{title}}</a>
+            <div class="card-meta">{{createDate10}} · {{category.0}}</div>
+            <div class="card-summary">{{contentText}}</div>
+          </div>
+        </li>
+        {{/articleList}}
+      </ul>
+      <div style="text-align:center;margin:32px 0;">
+        {{#pageNewer.0}}<a href="{{url}}" style="margin-right:18px;color:#007aff;">上一页</a>{{/pageNewer.0}}
+        {{#pageOlder.0}}<a href="{{url}}" style="color:#007aff;">下一页</a>{{/pageOlder.0}}
+      </div>
+    </main>
+    <aside class="sidebar">
+      <div class="widget">
+        <div class="widget-title">近期文章</div>
+        <ul class="recent-list">
+          {{#widgetRecentlyList}}
+          <li>
+            <img src="{{img}}" alt="{{title}}" loading="lazy" onerror="this.src='https://cdn.jsdelivr.net/gh/Arronlong/cdn@master/cfblog/cfblog-plus.png'">
+            <a href="{{url}}">{{title}}</a>
+          </li>
+          {{/widgetRecentlyList}}
+        </ul>
+      </div>
+      <div class="widget">
+        <div class="widget-title">分类目录</div>
+        <ul class="cat-list">
+          {{#widgetCategoryList}}
+          <li><a href="/category/{{.}}">{{.}}</a></li>
+          {{/widgetCategoryList}}
+        </ul>
+      </div>
+      <div class="widget">
+        <div class="widget-title">标签云</div>
+        <div class="tag-cloud">
+          {{#widgetTagsList}}
+          <a href="/tags/{{.}}">{{.}}</a>
+          {{/widgetTagsList}}
+        </div>
+      </div>
+    </aside>
+  </div>
+  <footer style="text-align:center;color:#aaa;font-size:14px;margin:40px 0 20px 0;">
+    {{OPT.copyRight}}
+  </footer>
+</body>
+</html>
