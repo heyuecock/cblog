@@ -89,11 +89,11 @@ function loadEnvVariables() {
   if (ENV_VARIABLES_LOADED) return;
   
   try {
-    ACCOUNT.user = BLOG_USER || "";
-    ACCOUNT.password = BLOG_PASSWORD || "";
-    ACCOUNT.jwt_secret = BLOG_JWT_SECRET || "a-very-secret-and-long-default-key-for-testing"; // 从环境变量加载JWT密钥，提供一个默认值
-    ACCOUNT.cacheZoneId = BLOG_CACHE_ZONE_ID || "";
-    ACCOUNT.cacheToken = BLOG_CACHE_TOKEN || "";
+    ACCOUNT.user = typeof BLOG_USER !== 'undefined' ? BLOG_USER : "";
+    ACCOUNT.password = typeof BLOG_PASSWORD !== 'undefined' ? BLOG_PASSWORD : "";
+    ACCOUNT.jwt_secret = typeof BLOG_JWT_SECRET !== 'undefined' ? BLOG_JWT_SECRET : "a-very-secret-and-long-default-key-for-testing";
+    ACCOUNT.cacheZoneId = typeof BLOG_CACHE_ZONE_ID !== 'undefined' ? BLOG_CACHE_ZONE_ID : "";
+    ACCOUNT.cacheToken = typeof BLOG_CACHE_TOKEN !== 'undefined' ? BLOG_CACHE_TOKEN : "";
 
     if (ACCOUNT.jwt_secret === "a-very-secret-and-long-default-key-for-testing") {
       console.warn("警告：正在使用默认的JWT密钥。为了生产环境的安全，请在Cloudflare环境变量中设置一个强随机字符串的'BLOG_JWT_SECRET'。");
