@@ -1,5 +1,6 @@
 /**------【①.谋而后定：配置区】-----**/
 
+import Mustache from './mustache.js';
 import index from './themes/index.html';
 import article from './themes/article.html';
 import login from './themes/login.html';
