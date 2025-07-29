@@ -2,6 +2,7 @@ name = "cfblog"
 main = "worker.js"
 compatibility_date = "2025-07-29"
 
+# 模块规则
 [[rules]]
 type = "ESModule"
 globs = ["**/*.js"]
@@ -13,3 +14,19 @@ globs = ["**/*.html"]
 [[rules]]
 type = "Data"
 globs = ["**/*.png"]
+
+# KV 命名空间绑定
+[[kv_namespaces]]
+binding = "CFBLOG"
+# 提示：请将下面的 "your_kv_namespace_id_here" 替换为您在 Cloudflare 仪表盘中创建的 KV 命名空间的实际 ID。
+id = "eb87b69c32ee47dcac60575380c87748"
+
+# 环境变量
+[vars]
+# 提示：请将下面的占位符替换为您的实际值。
+BLOG_USER = "admin"
+BLOG_PASSWORD = "heyue572"
+BLOG_JWT_SECRET = "8b341e2d-8d38-4704-ab92-fd6623a0a559"
+# 下面是可选的缓存清除变量，如果您需要使用 Cloudflare API 清除缓存，请填写它们。
+# BLOG_CACHE_ZONE_ID = "your_cloudflare_zone_id"
+# BLOG_CACHE_TOKEN = "your_cloudflare_api_token_with_cache_purge_permission"
