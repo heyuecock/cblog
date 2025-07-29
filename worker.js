@@ -980,7 +980,7 @@ async function handle_admin(request){
     async function exportArticle(arr=[],cursor="",limit=1){
       //分页获取文章内容
       const list=await CFBLOG.list({limit:limit,cursor:cursor});
-      if (!list.keys || list.keys.length === 0) return {};
+      if(!1 in list) return {};
       arr=arr.concat(list.keys)
       console.log("导出: ",typeof list, JSON.stringify(list))
       //判断是否导出完毕
