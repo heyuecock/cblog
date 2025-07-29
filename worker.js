@@ -1866,6 +1866,23 @@ function nullToEmpty(k){
 //判断格式:字符串是否为json，或者参数是否为对象
 // --- JWT (JSON Web Token) 助手函数 ---
 
+// Base64URL 编码
+function base64urlEncode(str) {
+  return btoa(str)
+    .replace(/\+/g, '-')
+    .replace(/\//g, '_')
+    .replace(/=/g, '');
+}
+
+// Base64URL 解码
+function base64urlDecode(str) {
+  str = str.replace(/-/g, '+').replace(/_/g, '/');
+  while (str.length % 4) {
+    str += '=';
+  }
+  return atob(str);
+}
+
 // 创建JWT
 async function createJWT(payload, secret, expirationInSeconds = 86400) { // 默认24小时过期
   // Header
@@ -1883,8 +1900,8 @@ async function createJWT(payload, secret, expirationInSeconds = 86400) { // 默�
   };
 
   // 编码
-  const encodedHeader = btoa(JSON.stringify(header)).replace(/=/g, '').replace(/\+/g, '-').replace(/\//g, '_');
-  const encodedPayload = btoa(JSON.stringify(fullPayload)).replace(/=/g, '').replace(/\+/g, '-').replace(/\//g, '_');
+  const encodedHeader = base64urlEncode(JSON.stringify(header));
+  const encodedPayload = base64urlEncode(JSON.stringify(fullPayload));
 
   const dataToSign = `${encodedHeader}.${encodedPayload}`;
 
@@ -1898,10 +1915,7 @@ async function createJWT(payload, secret, expirationInSeconds = 86400) { // 默�
   );
   const signature = await crypto.subtle.sign('HMAC', key, new TextEncoder().encode(dataToSign));
   
-  const encodedSignature = btoa(String.fromCharCode(...new Uint8Array(signature)))
-    .replace(/=/g, '')
-    .replace(/\+/g, '-')
-    .replace(/\//g, '_');
+  const encodedSignature = base64urlEncode(String.fromCharCode(...new Uint8Array(signature)));
 
   return `${dataToSign}.${encodedSignature}`;
 }
@@ -1910,6 +1924,9 @@ async function createJWT(payload, secret, expirationInSeconds = 86400) { // 默�
 async function verifyJWT(token, secret) {
   try {
     const [encodedHeader, encodedPayload, encodedSignature] = token.split('.');
+    if (!encodedHeader || !encodedPayload || !encodedSignature) {
+      return null;
+    }
     
     const dataToSign = `${encodedHeader}.${encodedPayload}`;
 
@@ -1922,21 +1939,16 @@ async function verifyJWT(token, secret) {
     );
 
     // 解码签名
-    let signature;
-    try {
-        signature = Uint8Array.from(atob(encodedSignature.replace(/-/g, '+').replace(/_/g, '/')), c => c.charCodeAt(0));
-    } catch (e) {
-        console.error("解码签名失败:", e);
-        return null;
-    }
+    const signature = Uint8Array.from(base64urlDecode(encodedSignature), c => c.charCodeAt(0));
 
     const isValid = await crypto.subtle.verify('HMAC', key, signature, new TextEncoder().encode(dataToSign));
 
     if (!isValid) {
+      console.error("JWT 签名无效");
       return null;
     }
 
-    const payload = JSON.parse(atob(encodedPayload.replace(/-/g, '+').replace(/_/g, '/')));
+    const payload = JSON.parse(base64urlDecode(encodedPayload));
 
     // 检查过期时间
     if (payload.exp < Math.floor(Date.now() / 1000)) {
