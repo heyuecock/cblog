@@ -177,6 +177,14 @@
       // 同步 markdown 到 html
       $('#content-html-code').val(editor.getHTML());
       var formData = $(this).serializeArray();
+      
+      // 设置 CSRF token
+      $.ajaxSetup({
+          headers: {
+              'x-csrf-token': $('meta[name="csrf-token"]').attr('content')
+          }
+      });
+
       $.ajax({
         url: '/admin/saveEdit',
         type: 'POST',
